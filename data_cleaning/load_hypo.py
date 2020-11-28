@@ -27,27 +27,11 @@ def load_train_test_fold(dataset_path: str, num_fold: int):
     root_folder = exploring.get_project_root()
     dataset_path = root_folder.joinpath(dataset_path)
     files_list = os.listdir(dataset_path)
-    train_file = files_list[num_fold * 2]
-    test_file = files_list[num_fold * 2 + 1]
+    train_file = files_list[num_fold * 2 + 1]
+    test_file = files_list[num_fold * 2]
     train_classes, train_data = load_and_clean_hypo(dataset_path.joinpath(train_file))
     test_classes, test_data = load_and_clean_hypo(dataset_path.joinpath(test_file))
     return train_classes, train_data, test_classes, test_data
-
-
-def parse_arff_to_df_all_data(dataset_path: str):# TO DELETE
-    root_folder = exploring.get_project_root()
-    full_path = root_folder.joinpath(dataset_path)
-    files_list = os.listdir(full_path)
-    data = loadarff(full_path.joinpath(files_list[0]))
-    matrix_df = pd.DataFrame(data[0])
-
-    for idx in range(1, len(files_list)):
-        file_to_open = full_path.joinpath(files_list[idx])
-        data = loadarff(file_to_open)
-        curr_df_data = pd.DataFrame(data[0])
-        matrix_df = matrix_df.append(curr_df_data, ignore_index=False)
-
-    return matrix_df
 
 
 def _delete_sex_unknown(df_data: pd.DataFrame) -> pd.DataFrame:
@@ -105,6 +89,22 @@ def _one_hot_encode_nominal_data(df_data: pd.DataFrame) -> pd.DataFrame:
     df_data = pd.get_dummies(data=df_data, columns=nominal_columns)
 
     return df_data
+
+
+def parse_arff_to_df_all_data(dataset_path: str):# TO DELETE
+    root_folder = exploring.get_project_root()
+    full_path = root_folder.joinpath(dataset_path)
+    files_list = os.listdir(full_path)
+    data = loadarff(full_path.joinpath(files_list[0]))
+    matrix_df = pd.DataFrame(data[0])
+
+    for idx in range(1, len(files_list)):
+        file_to_open = full_path.joinpath(files_list[idx])
+        data = loadarff(file_to_open)
+        curr_df_data = pd.DataFrame(data[0])
+        matrix_df = matrix_df.append(curr_df_data, ignore_index=False)
+
+    return matrix_df
 
 
 def explore_hypo():

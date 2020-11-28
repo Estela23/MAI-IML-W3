@@ -42,8 +42,8 @@ def load_train_test_fold(dataset_path: str, num_fold: int):
     root_folder = exploring.get_project_root()
     dataset_path = root_folder.joinpath(dataset_path)
     files_list = os.listdir(dataset_path)
-    train_file = files_list[num_fold * 2]
-    test_file = files_list[num_fold * 2 + 1]
+    train_file = files_list[num_fold * 2 + 1]
+    test_file = files_list[num_fold * 2]
     train_classes, train_data = load_and_clean_kropt(dataset_path.joinpath(train_file))
     test_classes, test_data = load_and_clean_kropt(dataset_path.joinpath(test_file))
     return train_classes, train_data, test_classes, test_data
