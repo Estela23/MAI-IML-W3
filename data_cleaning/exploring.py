@@ -3,6 +3,10 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
+from scipy.io.arff import loadarff
+from pathlib import Path
+
+
 from sklearn.metrics import classification_report
 
 
@@ -61,4 +65,14 @@ def plot_confusion_matrix(confusion_matrix, labels):
     sns.heatmap(confusion_matrix, annot=square_info, fmt="", cmap='Blues', xticklabels=labels, yticklabels=labels)
     plt.show()
 
+
+def parse_arff_file_to_df(dataset_path: str):
+    data = loadarff(dataset_path)
+    matrix_df = pd.DataFrame(data[0])
+
+    return matrix_df
+
+
+def get_project_root():
+    return Path(__file__).parent.parent
 

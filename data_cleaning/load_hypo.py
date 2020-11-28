@@ -1,20 +1,13 @@
-from scipy.io.arff import loadarff
 import pandas as pd
-from pathlib import Path
 import os
 from data_cleaning import exploring
 from sklearn.preprocessing import MinMaxScaler
-
-
-def parse_arff_file_to_df(dataset_path: str):
-    data = loadarff(dataset_path)
-    matrix_df = pd.DataFrame(data[0])
-
-    return matrix_df
+from scipy.io.arff import loadarff
 
 
 def load_and_clean_hypo(file_full_path):
-    df_data = parse_arff_file_to_df(file_full_path)
+    """gets a full hypothyroid path, loading and cleaning it"""
+    df_data = exploring.parse_arff_file_to_df(file_full_path)
     nominal_columns = exploring.get_list_non_numerical_columns_of_df(df_data)
     df_data = decode_nominal_string_variables_by_column_list(df_data, nominal_columns)
     df_data = df_data[df_data.isnull().sum(axis=1) < 3]
@@ -27,9 +20,12 @@ def load_and_clean_hypo(file_full_path):
     return classes, df_data
 
 
-def load_train_test_fold(dataset_name: str, num_fold: int):
-    root_folder = get_project_root()
-    dataset_path = root_folder.joinpath(dataset_name)
+def load_train_test_fold(dataset_path: str, num_fold: int):
+    """input1 dataset_name should be datasets/hypothyroid or datasets/kropt
+    input2 num_fold is the specific fold we want to load the data
+     returns the train correspondent test data of a specific fold with their classes"""
+    root_folder = exploring.get_project_root()
+    dataset_path = root_folder.joinpath(dataset_path)
     files_list = os.listdir(dataset_path)
     train_file = files_list[num_fold * 2]
     test_file = files_list[num_fold * 2 + 1]
@@ -38,8 +34,8 @@ def load_train_test_fold(dataset_name: str, num_fold: int):
     return train_classes, train_data, test_classes, test_data
 
 
-def parse_arff_to_df_all_data(dataset_path: str):
-    root_folder = get_project_root()
+def parse_arff_to_df_all_data(dataset_path: str):# TO DELETE
+    root_folder = exploring.get_project_root()
     full_path = root_folder.joinpath(dataset_path)
     files_list = os.listdir(full_path)
     data = loadarff(full_path.joinpath(files_list[0]))
@@ -86,6 +82,7 @@ def _fill_mixed_data_nans_with_mean(data: pd.DataFrame, numerical_columns, nomin
 
 def _split_encode_and_normalize(df_data: pd.DataFrame):
     classes = df_data['Class']
+    df_data.drop('Class', axis=1, inplace=True)
     scaler = MinMaxScaler()
     df_data = _one_hot_encode_nominal_data(df_data)
     df_data = scaler.fit_transform(df_data)
@@ -108,10 +105,6 @@ def _one_hot_encode_nominal_data(df_data: pd.DataFrame) -> pd.DataFrame:
     df_data = pd.get_dummies(data=df_data, columns=nominal_columns)
 
     return df_data
-
-
-def get_project_root() -> Path:
-    return Path(__file__).parent.parent
 
 
 def explore_hypo():
@@ -140,6 +133,6 @@ def explore_hypo():
     # We get rid of the row with age equals to 455.
     df_data.drop(df_data[df_data.age == 455].index, inplace=True)
 
-
-train_classes, train_data, test_classes, test_data = load_train_test_fold('datasets/hypothyroid', 5)
+# example - load fold 5
+# train_classes, train_data, test_classes, test_data = load_train_test_fold('datasets/hypothyroid', 5)
 
