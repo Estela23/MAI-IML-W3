@@ -2,7 +2,7 @@
 import numpy as np
 
 """
-:param matrix_k_neighbours: numpy array of the distances between each test data (row) and
+:param matrix_k_neighbours: list of lists, of the distances between each test data (row) and
                             its k nearest neighbours (sorted from min distance to max)
 :param list_y_train: list of lists, in the first list we have the labels (strings)
                     of the k NN from the first element in the test set
