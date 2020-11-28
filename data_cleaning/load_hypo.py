@@ -13,8 +13,8 @@ def parse_arff_file_to_df(dataset_path: str):
     return matrix_df
 
 
-def load_and_clean_hypo(file_path):
-    df_data = parse_arff_file_to_df(file_path)
+def load_and_clean_hypo(file_full_path):
+    df_data = parse_arff_file_to_df(file_full_path)
     nominal_columns = exploring.get_list_non_numerical_columns_of_df(df_data)
     df_data = decode_nominal_string_variables_by_column_list(df_data, nominal_columns)
     df_data = df_data[df_data.isnull().sum(axis=1) < 3]
@@ -22,9 +22,20 @@ def load_and_clean_hypo(file_path):
     df_data = _delete_sex_unknown(df_data)  # 1.2.1
     df_data = _delete_tbg_and_measure_check_columns(df_data)  # 2
     df_data = _fill_nans_with_mean_and_split(df_data)  # 4.1.1
-    classes, df_data = _split_class_encode_and_normalize(df_data)  # 5 & 6
+    classes, df_data = _split_encode_and_normalize(df_data)  # 5 & 6
 
     return classes, df_data
+
+
+def load_train_test_fold(dataset_name: str, num_fold: int):
+    root_folder = get_project_root()
+    dataset_path = root_folder.joinpath(dataset_name)
+    files_list = os.listdir(dataset_path)
+    train_file = files_list[num_fold * 2]
+    test_file = files_list[num_fold * 2 + 1]
+    train_classes, train_data = load_and_clean_hypo(dataset_path.joinpath(train_file))
+    test_classes, test_data = load_and_clean_hypo(dataset_path.joinpath(test_file))
+    return train_classes, train_data, test_classes, test_data
 
 
 def parse_arff_to_df_all_data(dataset_path: str):
@@ -73,12 +84,13 @@ def _fill_mixed_data_nans_with_mean(data: pd.DataFrame, numerical_columns, nomin
     return data
 
 
-def _split_class_encode_and_normalize(df_data: pd.DataFrame):
+def _split_encode_and_normalize(df_data: pd.DataFrame):
+    classes = df_data['Class']
     scaler = MinMaxScaler()
     df_data = _one_hot_encode_nominal_data(df_data)
     df_data = scaler.fit_transform(df_data)
 
-    return df_data
+    return classes, df_data
 
 
 def decode_nominal_string_variables_by_column_list(dataframe, columns) -> pd.DataFrame:
@@ -127,4 +139,7 @@ def explore_hypo():
     df_data.drop(columns=['TBG'], inplace=True)
     # We get rid of the row with age equals to 455.
     df_data.drop(df_data[df_data.age == 455].index, inplace=True)
-    df_data = _split_class_encode_and_normalize(df_data)
+
+
+train_classes, train_data, test_classes, test_data = load_train_test_fold('datasets/hypothyroid', 5)
+
