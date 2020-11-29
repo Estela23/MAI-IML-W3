@@ -3,6 +3,7 @@ import os
 from data_cleaning import exploring
 from sklearn.preprocessing import MinMaxScaler
 from scipy.io.arff import loadarff
+import numpy as np
 
 
 def load_and_clean_hypo(file_full_path):
@@ -32,6 +33,35 @@ def load_train_test_fold(dataset_path: str, num_fold: int):
     train_classes, train_data = load_and_clean_hypo(dataset_path.joinpath(train_file))
     test_classes, test_data = load_and_clean_hypo(dataset_path.joinpath(test_file))
     return train_classes, train_data, test_classes, test_data
+
+
+# def cross_validation(dataset_path: str, val_fold_idx: int):
+#     root_folder = exploring.get_project_root()
+#     full_path = root_folder.joinpath(dataset_path)
+#     files_list = os.listdir(full_path)
+#     train_classes_lst = []
+#     train_data_lst = []
+#     test_classes_lst = []
+#     test_data_lst = []
+#
+#     # for i in range(len(files_list)/2):
+#     for i in range(10):
+#         if i == val_fold_idx:
+#             continue
+#         else:
+#             train_classes, train_data, test_classes, test_data = load_train_test_fold(dataset_path, i)
+#             train_classes_lst.append(train_classes)
+#             train_data_lst.append(train_data)
+#             test_classes_lst.append(test_classes)
+#             test_data_lst.append(test_data)
+#
+#
+#     # print(train_classes_lst[0])
+#     # print(train_data_lst[0][0:10])
+#     # print(test_classes_lst[0])
+#     # print(test_data_lst[0][0:10])
+#     train_data_arr = np.array(train_data_lst)
+#     print(train_data_arr)
 
 
 def _delete_sex_unknown(df_data: pd.DataFrame) -> pd.DataFrame:
@@ -91,7 +121,7 @@ def _one_hot_encode_nominal_data(df_data: pd.DataFrame) -> pd.DataFrame:
     return df_data
 
 
-def parse_arff_to_df_all_data(dataset_path: str):# TO DELETE
+def parse_arff_to_df_all_data(dataset_path: str):
     root_folder = exploring.get_project_root()
     full_path = root_folder.joinpath(dataset_path)
     files_list = os.listdir(full_path)
@@ -125,7 +155,7 @@ def explore_hypo():
     # Exploring data
     exploring.print_unique_values_from_list_of_columns(df_data, nominal_columns)
     exploring.print_value_counts_from_list_of_columns(df_data, nominal_columns)
-    # some cleanning
+    # some cleaning
     df_data = parse_arff_to_df_all_data('datasets/hypothyroid')
     df_data.drop(columns=['TBG'], inplace=True)
     # TGB Has no values, so we can drop that column.
@@ -133,6 +163,10 @@ def explore_hypo():
     # We get rid of the row with age equals to 455.
     df_data.drop(df_data[df_data.age == 455].index, inplace=True)
 
+
 # example - load fold 5
 # train_classes, train_data, test_classes, test_data = load_train_test_fold('datasets/hypothyroid', 5)
+# print(type(train_data))
+# print(type(train_classes))
 
+# cross_validation('datasets/hypothyroid', 5)
