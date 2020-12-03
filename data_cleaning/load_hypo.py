@@ -1,172 +1,56 @@
 import pandas as pd
 import os
-from data_cleaning import exploring
-from sklearn.preprocessing import MinMaxScaler
+from data_cleaning import exploring, hypothyroid_cleaning
 from scipy.io.arff import loadarff
-import numpy as np
+
+pd.options.mode.chained_assignment = None  # default='warn'
 
 
-def load_and_clean_hypo(file_full_path):
-    """gets a full hypothyroid path, loading and cleaning it"""
-    df_data = exploring.parse_arff_file_to_df(file_full_path)
-    nominal_columns = exploring.get_list_non_numerical_columns_of_df(df_data)
-    df_data = decode_nominal_string_variables_by_column_list(df_data, nominal_columns)
-    df_data = df_data[df_data.isnull().sum(axis=1) < 3]
+def normalize(df_data, min_df, max_df, numeric_columns):
+    new_vals = (df_data[numeric_columns] - min_df) / (max_df - min_df)
+    df_data[numeric_columns] = new_vals
 
-    df_data = _delete_sex_unknown(df_data)  # 1.2.1
-    df_data = _delete_tbg_and_measure_check_columns(df_data)  # 2
-    df_data = _fill_nans_with_mean_and_split(df_data)  # 4.1.1
-    classes, df_data = _split_encode_and_normalize(df_data)  # 5 & 6
+    return df_data
 
-    return classes, df_data
+
+def numerical_min_max_calc(df_data, numeric_columns):
+    min_df = df_data[numeric_columns].min(axis=0)
+    max_df = df_data[numeric_columns].max(axis=0)
+
+    return min_df, max_df
 
 
 def load_train_test_fold(dataset_path: str, num_fold: int):
     """input1 dataset_name should be datasets/hypothyroid or datasets/kropt
     input2 num_fold is the specific fold we want to load the data
-     returns the train correspondent test data of a specific fold with their classes"""
+     returns the train and test data of a specific fold with their classes"""
     root_folder = exploring.get_project_root()
     dataset_path = root_folder.joinpath(dataset_path)
     files_list = os.listdir(dataset_path)
     train_file = files_list[num_fold * 2 + 1]
     test_file = files_list[num_fold * 2]
-    train_classes, train_data = load_and_clean_hypo(dataset_path.joinpath(train_file))
-    test_classes, test_data = load_and_clean_hypo(dataset_path.joinpath(test_file))
-    return train_classes, train_data, test_classes, test_data
+    temp_data = loadarff(dataset_path.joinpath(train_file))
+    train_data = pd.DataFrame(temp_data[0])
+    temp_data2 = loadarff(dataset_path.joinpath(test_file))
+    test_data = pd.DataFrame(temp_data2[0])
+    n_train = len(train_data)
+    whole_data = pd.concat([train_data, test_data])
+    classes, df_data, numeric_columns = hypothyroid_cleaning.clean_filling_sex_and_filling_nans(whole_data)
+    min_df, max_df = numerical_min_max_calc(df_data, numeric_columns)
+    classes_train = classes.iloc[0:n_train]
+    X_train = df_data.iloc[0:n_train, :]
+    X_train = normalize(X_train, min_df, max_df, numeric_columns)
+    classes_test = classes.iloc[n_train:-1]
+    X_test = df_data.iloc[n_train:-1, :]
+    X_test = normalize(X_test, min_df, max_df, numeric_columns)
 
-
-# def cross_validation(dataset_path: str, val_fold_idx: int):
-#     root_folder = exploring.get_project_root()
-#     full_path = root_folder.joinpath(dataset_path)
-#     files_list = os.listdir(full_path)
-#     train_classes_lst = []
-#     train_data_lst = []
-#     test_classes_lst = []
-#     test_data_lst = []
-#
-#     # for i in range(len(files_list)/2):
-#     for i in range(10):
-#         if i == val_fold_idx:
-#             continue
-#         else:
-#             train_classes, train_data, test_classes, test_data = load_train_test_fold(dataset_path, i)
-#             train_classes_lst.append(train_classes)
-#             train_data_lst.append(train_data)
-#             test_classes_lst.append(test_classes)
-#             test_data_lst.append(test_data)
-#
-#
-#     # print(train_classes_lst[0])
-#     # print(train_data_lst[0][0:10])
-#     # print(test_classes_lst[0])
-#     # print(test_data_lst[0][0:10])
-#     train_data_arr = np.array(train_data_lst)
-#     print(train_data_arr)
-
-
-def _delete_sex_unknown(df_data: pd.DataFrame) -> pd.DataFrame:
-    df_data = df_data.loc[df_data.sex != '?']
-
-    return df_data
-
-
-def _delete_tbg_and_measure_check_columns(df_data: pd.DataFrame) -> pd.DataFrame:
-    columns_to_drop = ['TBG', 'T3_measured', 'TT4_measured', 'T4U_measured', 'FTI_measured', 'TBG_measured']
-    df_data.drop(columns_to_drop, axis=1, inplace=True)
-
-    return df_data
-
-
-def _fill_nans_with_mean_and_split(df_data: pd.DataFrame):
-    nominal_columns = exploring.get_list_non_numerical_columns_of_df(df_data)
-    numerical_columns = [column for column in df_data.columns if column not in nominal_columns]
-    df_data = _fill_mixed_data_nans_with_mean(df_data, numerical_columns, nominal_columns)
-
-    return df_data
-
-
-def _fill_mixed_data_nans_with_mean(data: pd.DataFrame, numerical_columns, nominal_columns) -> pd.DataFrame:
-    data_nominal = data.loc[:, nominal_columns]
-    data_numerical = data.loc[:, numerical_columns]
-    data_numerical.fillna(data_numerical.mean(), inplace=True)
-    data = data_nominal.join(data_numerical)
-
-    return data
-
-
-def _split_encode_and_normalize(df_data: pd.DataFrame):
-    classes = df_data['Class']
-    df_data.drop('Class', axis=1, inplace=True)
-    scaler = MinMaxScaler()
-    df_data = _one_hot_encode_nominal_data(df_data)
-    df_data = scaler.fit_transform(df_data)
-
-    return classes, df_data
-
-
-def decode_nominal_string_variables_by_column_list(dataframe, columns) -> pd.DataFrame:
-    """
-    Decode nominal variables from byte strings to strings.
-    """
-    for column in columns:
-        dataframe[column] = dataframe[column].str.decode('utf8')
-
-    return dataframe
-
-
-def _one_hot_encode_nominal_data(df_data: pd.DataFrame) -> pd.DataFrame:
-    nominal_columns = exploring.get_list_non_numerical_columns_of_df(df_data)
-    df_data = pd.get_dummies(data=df_data, columns=nominal_columns)
-
-    return df_data
-
-
-def parse_arff_to_df_all_data(dataset_path: str):
-    root_folder = exploring.get_project_root()
-    full_path = root_folder.joinpath(dataset_path)
-    files_list = os.listdir(full_path)
-    data = loadarff(full_path.joinpath(files_list[0]))
-    matrix_df = pd.DataFrame(data[0])
-
-    for idx in range(1, len(files_list)):
-        file_to_open = full_path.joinpath(files_list[idx])
-        data = loadarff(file_to_open)
-        curr_df_data = pd.DataFrame(data[0])
-        matrix_df = matrix_df.append(curr_df_data, ignore_index=False)
-
-    return matrix_df
-
-
-def explore_hypo():
-    df_data = parse_arff_to_df_all_data('datasets/hypothyroid')
-
-    print(f"There is NaN values: {df_data.isnull().values.any()}")
-    print(f"Number of NaN values: {df_data.isnull().sum().sum()}")
-    print(f"We can find NaN values in the following attributes: {df_data.columns[df_data.isna().any()].tolist()}")
-
-    nominal_columns = exploring.get_list_non_numerical_columns_of_df(df_data)
-    print(f"Nominal Columns: {nominal_columns}")
-    numerical_columns = [column for column in df_data.columns if column not in nominal_columns]
-    print(f"Numerical Columns: {numerical_columns}")
-
-    # We can see a bit of the dataset
-    print(df_data.head())
-
-    # Exploring data
-    exploring.print_unique_values_from_list_of_columns(df_data, nominal_columns)
-    exploring.print_value_counts_from_list_of_columns(df_data, nominal_columns)
-    # some cleaning
-    df_data = parse_arff_to_df_all_data('datasets/hypothyroid')
-    df_data.drop(columns=['TBG'], inplace=True)
-    # TGB Has no values, so we can drop that column.
-    df_data.drop(columns=['TBG'], inplace=True)
-    # We get rid of the row with age equals to 455.
-    df_data.drop(df_data[df_data.age == 455].index, inplace=True)
+    return classes_train, X_train, classes_test, X_test
 
 
 # example - load fold 5
-# train_classes, train_data, test_classes, test_data = load_train_test_fold('datasets/hypothyroid', 5)
-# print(type(train_data))
-# print(type(train_classes))
+classes_train, X_train, classes_test, X_test = load_train_test_fold('datasets/hypothyroid', 5)
+print(len(X_train))
+print(len(X_test))
+print(len(classes_train))
+print(len(classes_test))
 
-# cross_validation('datasets/hypothyroid', 5)
