@@ -21,7 +21,7 @@ def load_and_clean_kropt(file_full_path):
             df_data[col] = [letter_to_labels(item) / 8 for item in df_data[col]]
         else:
             df_data[col] = [int_to_label(item) / 8 for item in df_data[col]]
-    df_data = np.array(df_data)
+    
     return classes, df_data
 
 
