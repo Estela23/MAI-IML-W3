@@ -35,20 +35,21 @@ def load_train_test_fold(dataset_path: str, num_fold: int):
     test_data = pd.DataFrame(temp_data2[0])
     n_train = len(train_data)
     whole_data = pd.concat([train_data, test_data])
-    classes, df_data, numeric_columns = hypothyroid_cleaning.clean_filling_sex_and_filling_nans(whole_data)
+    classes, df_data, numeric_columns, num_drop_upper = hypothyroid_cleaning.clean_filling_sex_and_filling_nans(whole_data, n_train)
+    # sending n_train to understand if we drop any samples from train data or from test data
     min_df, max_df = numerical_min_max_calc(df_data, numeric_columns)
-    classes_train = classes.iloc[0:n_train]
-    X_train = df_data.iloc[0:n_train, :]
+    classes_train = classes.iloc[0:n_train-num_drop_upper]
+    X_train = df_data.iloc[0:n_train-num_drop_upper, :]
     X_train = normalize(X_train, min_df, max_df, numeric_columns)
-    classes_test = classes.iloc[n_train:-1]
-    X_test = df_data.iloc[n_train:-1, :]
+    classes_test = classes.iloc[n_train-num_drop_upper:len(df_data)]
+    X_test = df_data.iloc[n_train-num_drop_upper:len(df_data), :]
     X_test = normalize(X_test, min_df, max_df, numeric_columns)
 
     return classes_train, X_train, classes_test, X_test
 
 
 # example - load fold 5
-classes_train, X_train, classes_test, X_test = load_train_test_fold('datasets/hypothyroid', 5)
+classes_train, X_train, classes_test, X_test = load_train_test_fold('datasets/hypothyroid', 1)
 print(len(X_train))
 print(len(X_test))
 print(len(classes_train))
