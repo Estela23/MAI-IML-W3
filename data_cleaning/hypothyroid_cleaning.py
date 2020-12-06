@@ -4,6 +4,7 @@ from typing import List
 import pandas as pd
 import random
 from data_cleaning import exploring
+import numpy as np
 
 
 def clean_deleting_sex_and_delete_nans(df_data):
@@ -36,15 +37,15 @@ def clean_filling_sex_and_delete_nans():
     return classes, df_data
 
 
-def clean_filling_sex_and_filling_nans(df_data):
+def clean_filling_sex_and_filling_nans(df_data, n_train):
     df_data = _clean_first_nan_values_and_decode(df_data)  # 1.1
-    df_data = _fill_sex_unknown(df_data)  # 1.2.2
+    df_data, num_drop_upper = _fill_sex_unknown(df_data, n_train)  # 1.2.2
     df_data = _delete_tbg_and_measure_check_columns(df_data)  # 2
     numerical_columns = df_data._get_numeric_data().columns
     df_data = _fill_nans_with_mean_and_split(df_data)  # 4.1.1
     classes, df_data = _split_class_encode_and_normalize(df_data)  # 5 & 6
 
-    return classes, df_data, numerical_columns
+    return classes, df_data, numerical_columns, num_drop_upper
 
 
 def _clean_first_nan_values_and_decode(df_data) -> pd.DataFrame:
@@ -55,28 +56,32 @@ def _clean_first_nan_values_and_decode(df_data) -> pd.DataFrame:
 
 
 def _random_male_female(prob_female):
-    result = random.choices(['F', 'M'], weights=[prob_female, 1-prob_female])
+    result = random.choices(['F', 'M'], weights=[prob_female, 1 - prob_female])
 
     return result[0]
 
 
-def _fill_sex_unknown(df_data: pd.DataFrame) -> pd.DataFrame:
+def _fill_sex_unknown(df_data: pd.DataFrame, n_divide) -> pd.DataFrame:
     num_females = df_data['sex'].value_counts()[0]
     num_males = df_data['sex'].value_counts()[1]
-    prob_female = num_females / (num_females+num_males)
+    prob_female = num_females / (num_females + num_males)
     # We have samples of pregnants with 73 years, which we assume is wrong.
     mask = (df_data['pregnant'] == 't') & (df_data['age'] > 55)
+    num_drop_upper = sum(mask[0:n_divide])
     df_data.drop(df_data[mask].index, inplace=True)
+    # df_data['pregnant'][mask] = 'f'
     df_data.reset_index(inplace=True, drop=True)
     # We make sure that all pregnants are woman
     mask2 = (df_data['pregnant'] == 't') & (df_data['sex'] == 'M')
+    num_drop_upper = num_drop_upper + sum(mask2[0:n_divide])
+    # df_data['pregnant'][mask2] = 'f'
     df_data.drop(df_data[mask2].index, inplace=True)
     df_data.reset_index(inplace=True, drop=True)
     # df_data['sex'] = df_data.apply(lambda x: 'F' if x.sex == '?' and x.pregnant == 't' else x, axis=1)
     # We introduce random sex
     df_data['sex'] = df_data['sex'].map(lambda x: _random_male_female(prob_female) if x == '?' else x)
 
-    return df_data
+    return df_data, num_drop_upper
 
 
 def _delete_sex_unknown(df_data: pd.DataFrame) -> pd.DataFrame:
@@ -140,7 +145,6 @@ def _one_hot_encode_nominal_data(df_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def _split_class_encode_and_normalize(df_data: pd.DataFrame):
-
     classes = df_data['Class']
     df_data.drop('Class', axis=1, inplace=True)
     df_data = _one_hot_encode_nominal_data(df_data)
