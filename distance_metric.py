@@ -21,20 +21,20 @@ def manhattan_metric(train_matrix, test_matrix, feature_weights):
     return matrix_delta
 
 
-def euclidean_metric(train_matrix, test_matrix):
+def euclidean_metric(train_matrix, test_matrix, feature_weights):
     matrix_delta = np.zeros(test_matrix.shape[0], train_matrix.shape[0])
-    for q in test_matrix:
+    for idy, q in enumerate(test_matrix):
         for idx, instance in enumerate(train_matrix):
-            temp_sum = np.sum(np.square(q - instance))
-            matrix_delta[idx] += np.sqrt(temp_sum)
+            temp_sum = np.dot(feature_weights, np.square(q - instance))
+            matrix_delta[idy][idx] += np.sqrt(temp_sum)
     return matrix_delta
 
 
-def camberra_metric(train_matrix, test_matrix):
+def camberra_metric(train_matrix, test_matrix, feature_weights):
     matrix_delta = np.zeros(test_matrix.shape[0], train_matrix.shape[0])
-    for q in test_matrix:
+    for idy, q in enumerate(test_matrix):
         for idx, instance in enumerate(train_matrix):
             numerator = np.abs(q - instance)
             denominator = np.abs(q + instance)
-            matrix_delta[idx] += np.sum(numerator / denominator)
+            matrix_delta[idy][idx] += np.dot(feature_weights, np.sum(numerator / denominator))
     return matrix_delta
