@@ -43,9 +43,9 @@ def clean_filling_sex_and_filling_nans(df_data, n_train):
     df_data = _delete_tbg_and_measure_check_columns(df_data)  # 2
     numerical_columns = df_data._get_numeric_data().columns
     df_data = _fill_nans_with_mean_and_split(df_data)  # 4.1.1
-    classes, df_data = _split_class_encode_and_normalize(df_data)  # 5 & 6
+    df_data = _split_class_encode_and_normalize(df_data)  # 5 & 6
 
-    return classes, df_data, numerical_columns, num_drop_upper
+    return df_data, numerical_columns, num_drop_upper
 
 
 def _clean_first_nan_values_and_decode(df_data) -> pd.DataFrame:
@@ -115,7 +115,8 @@ def _fill_mixed_data_nans_with_mean(data: pd.DataFrame, numerical_columns: List,
     data_numerical = data.loc[:, numerical_columns]
     data_numerical.fillna(data_numerical.mean(), inplace=True)
 
-    data = data_nominal.join(data_numerical)
+    # data = data_nominal.join(data_numerical)
+    data = data_numerical.join(data_nominal)
 
     return data
 
@@ -145,11 +146,12 @@ def _one_hot_encode_nominal_data(df_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def _split_class_encode_and_normalize(df_data: pd.DataFrame):
+    df_data["Class"] = pd.factorize(df_data["Class"])[0] + 1
     classes = df_data['Class']
     df_data.drop('Class', axis=1, inplace=True)
     df_data = _one_hot_encode_nominal_data(df_data)
-
-    return classes, df_data
+    data = df_data.join(classes)
+    return data
 
 
 def decode_nominal_string_variables_by_column_list(dataframe: pd.DataFrame, columns: List) -> pd.DataFrame:
