@@ -12,12 +12,12 @@ def distances_metrics(train_matrix, test_matrix, metric):
     return matrix_delta
 
 
-def manhattan_metric(train_matrix, test_matrix):
-    matrix_delta = np.zeros(test_matrix.shape[0], train_matrix.shape[0])
-    for q in test_matrix:
+def manhattan_metric(train_matrix, test_matrix, feature_weights):
+    matrix_delta = np.zeros((test_matrix.shape[0], train_matrix.shape[0]))
+    for idy, q in enumerate(test_matrix):
         for idx, instance in enumerate(train_matrix):
-            abs_differences = np.abs(q - instance)
-            matrix_delta[q][idx] += np.sum(abs_differences)
+            abs_differences = np.dot(feature_weights, np.abs(q - instance))
+            matrix_delta[idy][idx] += abs_differences  # np.sum(abs_differences)
     return matrix_delta
 
 

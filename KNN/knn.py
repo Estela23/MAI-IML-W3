@@ -23,14 +23,22 @@ class KNN:
     def predict(self, data_to_predict):
         # We calculate distances among all instances
         # Note that distance function will receive as 3rd argument the function for calculate the weighting
-        distances = "self._distance_function(self._data, data_to_predict, self._weighting_function)"
-        label_distances = self._data[:, -1]
+        # weights = self._weighting_function(self._data[:, :-1], self._data[:, -1], self._k)
+        print("Calculating weigths...")
+        weights = self._weighting_function(self._data[:, :-1])
+        print("Calculating distances...")
+        deltas = self._distance_function(self._data[:, :-1], data_to_predict[:, :-1], weights)
+        distances = np.sum(np.dot(weights, deltas))
 
+        label_distances = self._data[:, :-1]
+
+        print("Sorting distances...")
         # We get the closest distances with its labels
         k_closests_distances, k_closest_labels = self._sort_distances_and_labels(distances, label_distances, self._k)
 
+        print("Performing voting...")
         # We perform voting
-        class_result = "self._voting_function(k_closests_distances, k_closest_labels)"
+        class_result = self._voting_function(k_closests_distances, k_closest_labels)
 
         return class_result
 
