@@ -1,6 +1,7 @@
 from data_cleaning import exploring
 import os
 import numpy as np
+import pandas as pd
 
 
 def load_and_clean_kropt(file_full_path):
@@ -8,10 +9,11 @@ def load_and_clean_kropt(file_full_path):
     df_data = exploring.parse_arff_file_to_df(file_full_path)
     df_data = decode_nominal_string_variables_by_column_list(df_data, df_data[:])
     # We store the class information for future references
-    classes = df_data["game"]
-
+    # classes = df_data["game"]
+    df_data["game"] = pd.factorize(df_data["game"])[0] + 1
+    # print(df_data.head())
     # We get rid of class information.
-    df_data = df_data.drop("game", axis=1)
+    # df_data = df_data.drop("game", axis=1)
 
     # label encoding the data
     # in case it is a column of chess - letter converted to int, else an integer is converted to int
@@ -19,10 +21,10 @@ def load_and_clean_kropt(file_full_path):
     for col in df_data[:]:
         if 'col' in col:
             df_data[col] = [letter_to_labels(item) / 8 for item in df_data[col]]
-        else:
+        elif 'row' in col:
             df_data[col] = [int_to_label(item) / 8 for item in df_data[col]]
-    
-    return classes, df_data
+
+    return df_data.to_numpy()
 
 
 def letter_to_labels(letter):
@@ -42,9 +44,9 @@ def load_train_test_fold(dataset_path: str, num_fold: int):
     files_list = os.listdir(dataset_path)
     train_file = files_list[num_fold * 2 + 1]
     test_file = files_list[num_fold * 2]
-    train_classes, train_data = load_and_clean_kropt(dataset_path.joinpath(train_file))
-    test_classes, test_data = load_and_clean_kropt(dataset_path.joinpath(test_file))
-    return train_classes, train_data, test_classes, test_data
+    train_data = load_and_clean_kropt(dataset_path.joinpath(train_file))
+    test_data = load_and_clean_kropt(dataset_path.joinpath(test_file))
+    return train_data, test_data
 
 
 def decode_nominal_string_variables_by_column_list(dataframe, columns):
@@ -58,8 +60,7 @@ def decode_nominal_string_variables_by_column_list(dataframe, columns):
 
 
 # example - load fold 1
-train_classes, train_data, test_classes, test_data = load_train_test_fold('datasets/kropt', 1)
-print(np.shape(train_classes))
-print(np.shape(train_data))
-print(np.shape(test_classes))
-print(np.shape(test_data))
+# train_data, test_data = load_train_test_fold('datasets/kropt', 1)
+# print(np.shape(train_data))
+# print(np.shape(test_data))
+# print(train_data[0:20, :])
