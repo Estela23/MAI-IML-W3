@@ -19,7 +19,7 @@ def euclidean_metric(train_matrix, test_matrix, feature_weights):
 
 def camberra_metric(train_matrix, test_matrix, feature_weights):
     matrix_distances = np.sum(feature_weights * (np.abs(train_matrix[:, None, :] - test_matrix[None, :, :]) /
-                                                 train_matrix[:, None, :] - test_matrix[None, :, :]), axis=-1)
+                                                 train_matrix[:, None, :] + test_matrix[None, :, :]), axis=-1)
     where_nans = np.isnan(matrix_distances)
     matrix_distances[where_nans] = 0
     return matrix_distances.T
