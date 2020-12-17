@@ -55,13 +55,9 @@ def run_experiment(data_name):
         for ind_k in range(len(k)):
             for ind_vote in range(len(voting_function)):
                 for ind_weight in range(len(weighting_function)):
-                    accuracy = 1
-                    incorrectly_classified = 2
-                    correctly_classified = 100
-                    time_res = 0.45
-                    # accuracy, correctly_classified, incorrectly_classified, time_res = \
-                    #     apply_model_on10folds(data_name, distance_function[ind_dist], k[ind_k],
-                    #                           voting_function[ind_vote], weighting_function[ind_weight])
+                    accuracy, correctly_classified, incorrectly_classified, time_res = \
+                        apply_model_on10folds(data_name, distance_function[ind_dist], k[ind_k],
+                                              voting_function[ind_vote], weighting_function[ind_weight])
                 # write results to txt
                 file.write('[' + distance_function[ind_dist] + ', ' + str(k[ind_k]) + ', ' + voting_function[ind_vote] +
                            ', ' + weighting_function[ind_weight] + ' ]')
