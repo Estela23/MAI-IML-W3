@@ -1,3 +1,5 @@
+import time
+
 import numpy as np
 
 
@@ -27,14 +29,17 @@ class KNN:
         print("Calculating weigths...")
         weights = self._weighting_function(self._data[:, :-1])
         print("Calculating distances...")
-        distances = self._distance_function(self._data[:, :-1], data_to_predict[:, :-1], weights)
+        time_init = time.time()
+        distances = self._distance_function(self._data[:, :-1], data_to_predict[:50, :-1], weights)
+        time_end = time.time()
+        print(f"total_time: {time_end-time_init}")
         # distances = np.sum(np.dot(weights, deltas))
 
-        label_distances = self._data[:, :-1]
+        labels = self._data[:, -1]
 
         print("Sorting distances...")
         # We get the closest distances with its labels
-        k_closests_distances, k_closest_labels = self._sort_distances_and_labels(distances, label_distances, self._k)
+        k_closests_distances, k_closest_labels = self._sort_distances_and_labels(distances, labels, self._k)
 
         print("Performing voting...")
         # We perform voting
@@ -43,6 +48,7 @@ class KNN:
         return class_result
 
     def _sort_distances_and_labels(self, data, labels, k):
+        labels = labels[np.newaxis, ...]
         index_array = np.argpartition(data, kth=k, axis=-1)
         k_closests_partition = np.take_along_axis(data, index_array, axis=-1)
         k_closests = k_closests_partition[:, :k]
