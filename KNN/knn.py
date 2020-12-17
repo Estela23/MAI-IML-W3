@@ -30,7 +30,7 @@ class KNN:
         weights = self._weighting_function(self._data[:, :-1])
         print("Calculating distances...")
         time_init = time.time()
-        distances = self._distance_function(self._data[:, :-1], data_to_predict[:50, :-1], weights)
+        distances = self._distance_function(self._data[:, :-1], data_to_predict[:, :-1], weights)
         time_end = time.time()
         print(f"total_time: {time_end-time_init}")
         # distances = np.sum(np.dot(weights, deltas))
