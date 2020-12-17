@@ -24,15 +24,13 @@ def manhattan_metric(train_matrix, test_matrix, feature_weights):
 
 
 def manhattan_metric(train_matrix, test_matrix, feature_weights):
-
-    #matrix_distances = np.abs(train_matrix[:, 0, None] - test_matrix[:, 0]) + \
+    # matrix_distances = np.abs(train_matrix[:, 0, None] - test_matrix[:, 0]) + \
     #                   np.abs(train_matrix[:, 1, None] - test_matrix[:, 1])
-
-    #matrix_distances = np.dot(feature_weights, np.abs(train_matrix[:, None] - test_matrix).sum(-1))
+    # matrix_distances = np.dot(feature_weights, np.abs(train_matrix[:, None] - test_matrix).sum(-1))
     matrix_distances = np.sum(feature_weights * (np.abs(train_matrix[:, None, :] - test_matrix[None, :, :])), axis=-1)
     return matrix_distances.T
 
-
+"""
 def euclidean_metric(train_matrix, test_matrix, feature_weights):
     matrix_distances = np.zeros(test_matrix.shape[0], train_matrix.shape[0])
     for idy, q in enumerate(test_matrix):
@@ -40,6 +38,12 @@ def euclidean_metric(train_matrix, test_matrix, feature_weights):
             temp_sum = np.dot(feature_weights, np.square(q - instance))
             matrix_distances[idy][idx] += np.sqrt(temp_sum)
     return matrix_distances
+"""
+
+def euclidean_metric(train_matrix, test_matrix, feature_weights):
+    matrix_distances = np.sqrt(np.sum(feature_weights * (np.square(train_matrix[:, None, :] - test_matrix[None, :, :])), axis=-1))
+    return matrix_distances
+
 
 
 def camberra_metric(train_matrix, test_matrix, feature_weights):
