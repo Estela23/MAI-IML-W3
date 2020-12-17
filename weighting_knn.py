@@ -9,8 +9,8 @@ multiply them and have the final distances between all the training and test ele
 """
 
 
-def equal_weight(train_data):
-    feature_weights = np.ones(train_data.shape[1])
+def equal_weight(*args):
+    feature_weights = np.ones(args[0].shape[1])
     return feature_weights
 
 

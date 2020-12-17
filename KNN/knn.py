@@ -27,8 +27,8 @@ class KNN:
         print("Calculating weigths...")
         weights = self._weighting_function(self._data[:, :-1])
         print("Calculating distances...")
-        deltas = self._distance_function(self._data[:, :-1], data_to_predict[:, :-1], weights)
-        distances = np.sum(np.dot(weights, deltas))
+        distances = self._distance_function(self._data[:, :-1], data_to_predict[:, :-1], weights)
+        # distances = np.sum(np.dot(weights, deltas))
 
         label_distances = self._data[:, :-1]
 
