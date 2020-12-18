@@ -36,6 +36,7 @@ def manhattan_metric(train_matrix, test_matrix, feature_weights):
     return matrix_distances
 """
 
+
 """
 def euclidean_metric(train_matrix, test_matrix, feature_weights):
     matrix_distances = np.zeros((test_matrix.shape[0], train_matrix.shape[0]))
@@ -45,6 +46,7 @@ def euclidean_metric(train_matrix, test_matrix, feature_weights):
             matrix_distances[idy][idx] += np.sqrt(temp_sum)
     return matrix_distances
 """
+
 
 
 """
