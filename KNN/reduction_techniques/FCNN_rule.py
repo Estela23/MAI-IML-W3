@@ -1,12 +1,12 @@
 import numpy as np
 
 
-def compute_centroids(train_data):
+def compute_centroids(data_to_fit, **_kwargs):
     centroids = []
-    labels = np.unique(train_data[:, -1])
+    labels = np.unique(data_to_fit[:, -1])
     for i in range(len(labels)):
-        instances_i = [train_data[j, :-1] for j in range(train_data.shape[0]) if train_data[j, -1] == i]
-        temp_sum = np.zeros(train_data.shape[1] - 1)
+        instances_i = [data_to_fit[j, :-1] for j in range(data_to_fit.shape[0]) if data_to_fit[j, -1] == i]
+        temp_sum = np.zeros(data_to_fit.shape[1] - 1)
         for j in range(len(instances_i)):
             temp_sum += instances_i[j]
         centroid_i = temp_sum / len(instances_i)

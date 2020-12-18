@@ -2,10 +2,10 @@ import time
 import numpy as np
 
 
-def ib2(train_data, knn):
-    subset = train_data[:knn._k+1, :]
+def ib2(data_to_fit, knn, **_kwargs):
+    subset = data_to_fit[:knn._k+1, :]
 
-    for instance in train_data:
+    for instance in data_to_fit:
         knn.fit(subset)
         class_results = knn.predict(instance[None, :])
         if class_results == instance[-1]:
