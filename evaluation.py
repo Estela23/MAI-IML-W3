@@ -15,7 +15,10 @@ def apply_model(distance_function, k, voting_function, weighting_function, train
     model = knn.KNN(distance_function, k, voting_function, weighting_function)
     model.fit(train_data)
     predictions = model.predict(test_data)  # instance 0
-    n_correct_class = sum((predictions == train_data[:, -1]).all())  # instance 0
+    classes = list(test_data[:, -1])
+    correct_class = [i for i in range(len(classes)) if predictions[i] == classes[i]]
+    n_correct_class = len(correct_class)
+    # n_correct_class = np.sum((predictions == classes).all())  # instance 0
     end_time = time.time()
     time_fold = end_time - start_time
 
@@ -24,8 +27,8 @@ def apply_model(distance_function, k, voting_function, weighting_function, train
 
 def apply_model_on10folds(data_name, distance_function, k, voting_function, weighting_function):
     n_folds = 10
-    correct_class = np.zeros((n_folds, 0))
-    time_folds = np.zeros((n_folds, 0))
+    correct_class = np.zeros((n_folds))
+    time_folds = np.zeros((n_folds))
     for j in range(n_folds):
         if data_name == 'datasets/kropt':
             train_data, test_data = load_kropt.load_train_test_fold(data_name, j)
@@ -36,11 +39,10 @@ def apply_model_on10folds(data_name, distance_function, k, voting_function, weig
                                                       train_data, test_data)
 
     # calculate average over 10 folds
-    incorrect_class = len(
-        correct_class) - correct_class  # broadcasting: number of instances minus the correctly classified
+    incorrect_class = len(test_data) - correct_class  # broadcasting: number of instances minus the correctly classified
     correctly_classified = np.average(correct_class)
     incorrectly_classified = np.average(incorrect_class)
-    accuracy_by_folds = correct_class / len(correct_class)
+    accuracy_by_folds = correct_class / len(test_data)
     accuracy_average = np.average(accuracy_by_folds)
     time_average = np.average(time_folds)
 
@@ -53,7 +55,7 @@ def run_experiment(data_name):
     k = [1, 3, 5, 7]
     voting_function = [majority_class, inverse_distance_weighted, sheppards_work]
     weighting_function = [equal_weight, info_gain, reliefF]
-    file = open("results_knn.txt", "w")
+    file = open("results_knn_hypothyroid.txt", "w")
     for ind_dist in range(len(distance_function)):
         for ind_k in range(len(k)):
             for ind_vote in range(len(voting_function)):
@@ -61,15 +63,20 @@ def run_experiment(data_name):
                     accuracy, correctly_classified, incorrectly_classified, time_res = \
                         apply_model_on10folds(data_name, distance_function[ind_dist], k[ind_k],
                                               voting_function[ind_vote], weighting_function[ind_weight])
-                # write results to txt
-                file.write('[' + distance_function[ind_dist].__name__ + ', ' + str(k[ind_k]) + ', ' +
-                           voting_function[ind_vote].__name__ + ', ' + weighting_function[ind_weight].__name__ + ' ]')
-                file.write("\tAccuracy:   " + str(accuracy) + "; correctly classified: " + str(correctly_classified) +
-                           "; incorrectly classified: " + str(incorrectly_classified) + ";\tTime:   " + str(time_res) +
-                           " \n")
+                    # write results to txt
+                    file.write('[' + distance_function[ind_dist].__name__ + ', ' + str(k[ind_k]) + ', ' +
+                               voting_function[ind_vote].__name__ + ', ' + weighting_function[ind_weight].__name__ + ' ]')
+                    file.write("\tAccuracy:   " + str(accuracy) + "; correctly classified: " + str(correctly_classified) +
+                               "; incorrectly classified: " + str(incorrectly_classified) + ";\tTime:   " + str(time_res) +
+                               " \n")
 
+                    print('[' + distance_function[ind_dist].__name__ + ', ' + str(k[ind_k]) + ', ' +
+                               voting_function[ind_vote].__name__ + ', ' + weighting_function[ind_weight].__name__ + ' ]')
+                    print("\tAccuracy:   " + str(accuracy) + "; correctly classified: " + str(correctly_classified) +
+                               "; incorrectly classified: " + str(incorrectly_classified) + ";\tTime:   " + str(time_res) +
+                               " \n")
     file.close()
 
 
-run_experiment('datasets/kropt')
-run_experiment('hypo/kropt')
+# run_experiment('datasets/kropt')
+run_experiment('datasets/hypothyroid')
