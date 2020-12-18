@@ -6,7 +6,8 @@ import numpy as np
 
 class KNN:
 
-    def __init__(self, distance_function, k, voting_function, weighting_function, verbose=True):
+    def __init__(self, distance_function, k, voting_function, weighting_function, reductionKNNAlgorithm=None,
+                 verbose=True):
         """
         distance : distance function to use
         k : number of nearest neighbours
@@ -18,10 +19,13 @@ class KNN:
         self._k = k
         self._voting_function = voting_function
         self._weighting_function = weighting_function
+        self._reductionKNNAlgorithm = reductionKNNAlgorithm
         self._verbose = verbose
 
     def fit(self, data_to_fit):
         # We store the training data
+        if self._reductionKNNAlgorithm is not None:
+            data_to_fit = self._reductionKNNAlgorithm(data_to_fit=data_to_fit, knn=self)
         self._data = data_to_fit
 
     def predict(self, data_to_predict):
