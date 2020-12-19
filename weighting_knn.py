@@ -2,6 +2,7 @@
 import numpy as np
 from sklearn.feature_selection import mutual_info_classif
 from ReliefF import ReliefF
+from sklearn.preprocessing import minmax_scale
 
 """
 return "feature_weights", after computing matrix_deltas and feature_weights we simply
@@ -20,7 +21,9 @@ def info_gain(train_data, train_classes, k):
 
 
 def reliefF(train_data, train_classes, k):
-    fs = ReliefF(n_neighbors=k, n_features_to_keep=train_data.shape[1])
+    fs = ReliefF(n_neighbors=10, n_features_to_keep=train_data.shape[1])
     fs.fit(train_data, train_classes)
     feature_weights = fs.feature_scores
+    feature_weights = minmax_scale(feature_weights)
+    feature_weights = feature_weights/sum(feature_weights)
     return feature_weights
