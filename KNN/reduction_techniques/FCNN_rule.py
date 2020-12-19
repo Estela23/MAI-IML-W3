@@ -14,7 +14,7 @@ def assign_instance_to_subset(data, subset_data):
     distances = calculate_distance(data, subset_data)
     assigns = []
     for i in range(len(data)):
-        assigns.append(np.argmin(distances[i]))
+        assigns.append(np.argmin(distances[i]) + 1)
     return np.array(assigns)
 
 
@@ -51,7 +51,7 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
             for idx, instance in enumerate(data_to_fit):
                 # If the instance is assigned at the member of the subset but is not of the same
                 # category, add to the list of misclassified
-                if assigns[idx] == i and data_to_fit[idx, -1] != labels_centroids[i]:
+                if assigns[idx] == i+1 and data_to_fit[idx, -1] != labels_centroids[i]:
                     misclassified.append(instance[:-1])
                     indexes.append(idx)
             if misclassified:
@@ -65,7 +65,8 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
             centroids = np.vstack((centroids, data_to_fit[i, :-1]))
             labels_centroids = np.hstack((labels_centroids, data_to_fit[i, -1]))
 
-    return centroids, labels_centroids
+    reduced_data = np.hstack((centroids, labels_centroids[:, None]))
+    return reduced_data
 
 
 """
@@ -91,8 +92,9 @@ def FCNN_rule(data_to_fit, **_kwargs):
             if rep is not None:
                 delta_S.append(rep)
     return S
-"""
+
 
 train_data, test_data = load_hypo.load_train_test_fold('datasets/hypothyroid', 1)
 
 reduced_train_data = new_FCNN_rule(train_data)
+"""
