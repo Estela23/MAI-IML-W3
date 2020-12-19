@@ -27,7 +27,7 @@ def ENN(data_to_fit, knn):
     return subset
 
 
-k = 7
+"""k = 7
 train_data, test_data = load_hypo.load_train_test_fold('datasets/hypothyroid', 1)
 print(np.shape(train_data))
 model = KNN(euclidean_metric, k, majority_class, equal_weight, verbose=False)
@@ -52,4 +52,4 @@ accuracy = correct_class / len(test_data)
 print("accuracy reduced data: ", accuracy)
 # print(accuracy)
 print("time: ", time_folds)
-
+"""
