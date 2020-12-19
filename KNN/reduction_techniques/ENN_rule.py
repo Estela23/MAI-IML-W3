@@ -1,10 +1,10 @@
 import numpy as np
 from KNN.knn import KNN
 import time
-from distance_metric import euclidean_metric
-from policies_knn import majority_class
-from weighting_knn import equal_weight
-from data_cleaning import load_kropt, load_hypo
+from KNN.algorithms.distance_metrics import euclidean_metric
+from KNN.algorithms.policies_knn import majority_class
+from KNN.algorithms.weighting_knn import equal_weight
+from data_cleaning import load_hypo
 
 
 # def enn(data_to_fit, knn):
