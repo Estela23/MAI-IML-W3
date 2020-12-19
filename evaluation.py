@@ -51,11 +51,15 @@ def apply_model_on10folds(data_name, distance_function, k, voting_function, weig
 
 def run_experiment(data_name):
     # define the knn we choose
-    distance_function = [manhattan_metric, euclidean_metric, camberra_metric]
-    k = [1, 3, 5, 7]
-    voting_function = [majority_class, inverse_distance_weighted, sheppards_work]
-    weighting_function = [equal_weight, info_gain, reliefF]
-    file = open("results_knn_hypothyroid.txt", "w")
+    # distance_function = [manhattan_metric, euclidean_metric] # camberra_metric
+    distance_function = [euclidean_metric] # camberra_metric
+
+    k = [21]
+    # voting_function = [majority_class, inverse_distance_weighted, sheppards_work]
+    # weighting_function = [equal_weight, info_gain, reliefF]
+    voting_function = [inverse_distance_weighted]
+    weighting_function = [reliefF]
+    file = open("results_knn_kropt_21nn_part2.txt", "w")
     for ind_dist in range(len(distance_function)):
         for ind_k in range(len(k)):
             for ind_vote in range(len(voting_function)):
@@ -78,5 +82,5 @@ def run_experiment(data_name):
     file.close()
 
 
-# run_experiment('datasets/kropt')
-run_experiment('datasets/hypothyroid')
+run_experiment('datasets/kropt')
+# run_experiment('datasets/hypothyroid')
