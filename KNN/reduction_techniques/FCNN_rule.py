@@ -27,7 +27,6 @@ def calculate_distance_vectors(x1, x2):
 def compute_centroids(data_to_fit):
     centroids = []
     labels_centroids = np.unique(data_to_fit[:, -1])
-    n_classes = len(labels_centroids)
     for label in labels_centroids:
         instances_i = [data_to_fit[j, :-1] for j in range(data_to_fit.shape[0]) if data_to_fit[j, -1] == label]
         temp_sum = np.zeros(data_to_fit.shape[1] - 1)
@@ -35,11 +34,11 @@ def compute_centroids(data_to_fit):
             temp_sum += instances_i[j]
         centroid_i = temp_sum / len(instances_i)
         centroids.append(centroid_i)
-    return n_classes, centroids, labels_centroids
+    return centroids, labels_centroids
 
 
 def new_FCNN_rule(data_to_fit, **_kwargs):
-    n_classes, centroids, labels_centroids = compute_centroids(data_to_fit)
+    centroids, labels_centroids = compute_centroids(data_to_fit)
     delta_S = True
     while delta_S:
         # Assign each instance to a member of the subset
@@ -66,8 +65,6 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
             centroids = np.vstack((centroids, data_to_fit[i, :-1]))
             labels_centroids = np.hstack((labels_centroids, data_to_fit[i, -1]))
 
-    centroids = centroids[n_classes:, :]
-    labels_centroids = labels_centroids[n_classes:, :]
     reduced_data = np.hstack((centroids, labels_centroids[:, None]))
     return reduced_data
 
