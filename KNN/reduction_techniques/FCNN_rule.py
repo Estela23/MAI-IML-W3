@@ -42,7 +42,7 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
     delta_S = True
     while delta_S:
         # Assign each instance to a member of the subset
-        assigns = assign_instance_to_subset(data_to_fit, centroids)
+        assigns = assign_instance_to_subset(data_to_fit[:, :-1], centroids)
 
         newSetIndices = []
         for i in range(len(centroids)):
@@ -52,7 +52,7 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
                 # If the instance is assigned at the member of the subset but is not of the same
                 # category, add to the list of misclassified
                 if assigns[idx] == i and data_to_fit[idx, -1] != labels_centroids[i]:
-                    misclassified.append(instance)
+                    misclassified.append(instance[:-1])
                     indexes.append(idx)
             if misclassified:
                 # Get the representative misclassified instance from the set (in this case,
