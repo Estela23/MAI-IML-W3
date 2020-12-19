@@ -1,5 +1,6 @@
 # File where the three optional policies will be implemented
 import numpy as np
+from random import randrange
 
 """
 :param matrix_k_neighbours: list of lists, of the distances between each test data (row) and
@@ -75,5 +76,24 @@ def sheppards_work(matrix_k_neighbours, list_y_train):
                     predicted = label
                     predicted_labels.append(predicted)
                     break
+
+    return predicted_labels
+
+
+def random_policy(matrix_k_neighbours, list_y_train):
+    predicted_labels = []
+    for n_instance, neighbours in enumerate(matrix_k_neighbours):
+        labels_neighbours = list_y_train[n_instance]
+        labels_dict = {}
+        for label in set(labels_neighbours):
+            count_label = labels_neighbours.count(label)
+            labels_dict[label] = count_label
+        possible_labels = [k for k, v in labels_dict.items() if v == labels_dict[max(labels_dict, key=labels_dict.get)]]
+        if len(possible_labels) == 1:
+            predicted_labels.append(possible_labels[0])
+        else:
+            predicted_idx = randrange(len(possible_labels))  # in case of equality - choose a random from the possibles
+            predicted = possible_labels[predicted_idx]
+            predicted_labels.append(predicted)
 
     return predicted_labels
