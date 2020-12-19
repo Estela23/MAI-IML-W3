@@ -42,9 +42,9 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
     delta_S = True
     while delta_S:
         # Assign each instance to a member of the subset
-        assigns = assign_instance_to_subset(data_to_fit, centroids)
+        assigns = assign_instance_to_subset(data_to_fit[:, :-1], centroids)
 
-        newSetIndices = []
+        delta_S = []
         for i in range(len(centroids)):
             misclassified = []
             indexes = []
@@ -52,16 +52,16 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
                 # If the instance is assigned at the member of the subset but is not of the same
                 # category, add to the list of misclassified
                 if assigns[idx] == i and data_to_fit[idx, -1] != labels_centroids[i]:
-                    misclassified.append(instance)
+                    misclassified.append(instance[:-1])
                     indexes.append(idx)
             if misclassified:
                 # Get the representative misclassified instance from the set (in this case,
                 # FCNN, takes the closest misclassified instance to the member of the subset)
                 rep = np.argmin(calculate_distance(misclassified, np.array(centroids[i:i + 1])))
-                newSetIndices.append(indexes[rep])
+                delta_S.append(indexes[rep])
 
         # Actualize the new subset
-        for i in newSetIndices:
+        for i in delta_S:
             centroids = np.vstack((centroids, data_to_fit[i, :-1]))
             labels_centroids = np.hstack((labels_centroids, data_to_fit[i, -1]))
 
