@@ -111,5 +111,27 @@ def get_combination(line):
     return line.split('\t')[0]
 
 
+def str_lst_to_floats(lst):
+    output = [float(lst[i]) for i in range(len(lst))]
+    return output
+
+
+def read_folds(file_name, num_line):
+    f = open(file_name, "r")
+    txt = f.readlines()
+    line = txt[num_line]
+    splited = line.split("\t")
+    accuracy_by_folds = str_lst_to_floats(splited[5].strip("accuracy_by_folds: ").split(", "))
+    correctly_classified_by_folds = str_lst_to_floats(splited[6].strip("correctly_classified_by_folds: ").split(", "))
+    incorrectly_classified_by_folds = str_lst_to_floats(
+        splited[7].strip("incorrectly_classified_by_folds: ").split(", "))
+    time_by_folds = str_lst_to_floats(splited[8].strip("time_by_folds: ").split(", "))
+    return accuracy_by_folds, correctly_classified_by_folds, incorrectly_classified_by_folds, time_by_folds
+
+
+
 # analyze("results_knn_kropt_final_alberto.txt")
-analyze("results_knn_hypothyroid_fixed.txt")
+# analyze("results_knn_hypothyroid_fixed.txt")
+
+# accuracies, correctly_classified, incorrectly_classified, time = read_folds('tair_test.txt', 0)
+

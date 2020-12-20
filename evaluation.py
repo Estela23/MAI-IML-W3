@@ -60,8 +60,8 @@ def write_results(file, dist_function, selected_k, vote_function, weight_functio
                   incorrectly_classified, time_res, accuracy_folds, correctly_classified_folds,
                   incorrectly_classified_folds, time_folds):
     file.write(f"[{dist_function.__name__}, {str(selected_k)}, {vote_function.__name__}, {weight_function.__name__}]")
-    file.write(f"\tAccuracy:   {accuracy}; correctly classified: {correctly_classified}; incorrectly classified: "
-               f"{incorrectly_classified};\tTime:   {time_res} ")
+    file.write(f"\tAccuracy:   {accuracy}; \tcorrectly classified: {correctly_classified}; \tincorrectly classified: "
+               f"{incorrectly_classified}; \tTime:   {time_res} \t")
     file.write(f"accuracy_by_folds: " + ", ".join(str(accuracy) for accuracy in accuracy_folds) + "\t")
     file.write(f"correctly_classified_by_folds: " + ", ".join(str(cor_class) for cor_class in
                                                               correctly_classified_folds) + "\t")
