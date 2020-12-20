@@ -71,22 +71,23 @@ def print_results(dist_function, selected_k, vote_function, weight_function, acc
 
 
 def run_experiment(data_name, file_name_to_export, distance_functions, k, voting_functions, weighting_functions,
-                   reduction_technique=None):
+                   reduction_techniques):
 
     file = open(file_name_to_export, "w")
     for dist_function in distance_functions:
         for selected_k in k:
             for vote_function in voting_functions:
                 for weight_function in weighting_functions:
-                    accuracy, correctly_classified, incorrectly_classified, time_res = \
-                        apply_model_on10folds(data_name, dist_function, selected_k, vote_function,
-                                              weight_function, reduction_technique)
-                    # Write results to txt
-                    write_results(file, dist_function, selected_k, vote_function, weight_function, accuracy,
-                                  correctly_classified, incorrectly_classified, time_res)
+                    for red_technique in reduction_techniques:
+                        accuracy, correctly_classified, incorrectly_classified, time_res = \
+                            apply_model_on10folds(data_name, dist_function, selected_k, vote_function,
+                                                  weight_function, red_technique)
+                        # Write results to txt
+                        write_results(file, dist_function, selected_k, vote_function, weight_function, accuracy,
+                                      correctly_classified, incorrectly_classified, time_res)
 
-                    print_results(dist_function, selected_k, vote_function, weight_function, accuracy,
-                                  correctly_classified, incorrectly_classified, time_res)
+                        print_results(dist_function, selected_k, vote_function, weight_function, accuracy,
+                                      correctly_classified, incorrectly_classified, time_res)
 
     file.close()
 
@@ -105,7 +106,7 @@ if __name__ == '__main__':
     # Options: equal_weight, info_gain, reliefF
     weighting_functions = [equal_weight]
 
-    reduction_technique = new_FCNN_rule  # new_FCNN_rule, ENN, ib2
+    reduction_techniques = [None]  # new_FCNN_rule, ENN, ib2
 
     run_experiment(data_to_use, file_name_to_export, distance_functions, k, voting_functions, weighting_functions,
-                   reduction_technique)
+                   reduction_techniques)
