@@ -64,6 +64,14 @@ def analyze(file_name):
     print("best accuracy got " + get_combination(txt[best_idx]) + " with accuracy " + str(get_accuracy(txt[best_idx]))
           + " with time: " + str(get_time(txt[best_idx])))
 
+    print("all euclidean \n")
+
+
+def get_best_idx_for_param(txt, lst):
+    best_idx_idx = get_best_accuracy_idx([print(txt[lst[i]]) for i in range(len(lst))])
+    best_idx = lst[best_idx_idx]
+    return best_idx
+
 
 def get_best_accuracy_idx(txt):
     total_accuracy = []
@@ -87,8 +95,8 @@ def print_average_accuracy(idx_lst, txt):
 
 
 def get_combination(line):
-    return (line.split('\t')[0])
+    return line.split('\t')[0]
 
 
 # analyze("results_knn_kropt_final_alberto.txt")
-# analyze("results_knn_hypo_final_alberto.txt")
+analyze("results_knn_hypo_final_alberto.txt")
