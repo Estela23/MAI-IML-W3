@@ -91,7 +91,6 @@ def run_experiment(data_name, file_name_to_export, distance_functions, k, voting
 
     file.close()
 
-
 if __name__ == '__main__':
 
     data_to_use = "datasets/kropt"
