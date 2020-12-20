@@ -1,13 +1,5 @@
-import numpy as np
 from KNN.algorithms.policies_knn import random_policy
-from data_cleaning import load_kropt, load_hypo
-from KNN.knn import KNN
 import numpy as np
-import time
-from KNN.algorithms.distance_metrics import manhattan_metric, euclidean_metric, camberra_metric
-from KNN.algorithms.policies_knn import majority_class, inverse_distance_weighted, sheppards_work
-from KNN.algorithms.weighting_knn import equal_weight, info_gain, reliefF
-from evaluation import apply_model
 
 
 def ENN(data_to_fit, knn):
