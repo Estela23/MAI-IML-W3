@@ -73,7 +73,7 @@ def print_results(dist_function, selected_k, vote_function, weight_function, acc
 def run_experiment(data_name, file_name_to_export, distance_functions, k, voting_functions, weighting_functions,
                    reduction_techniques):
 
-    file = open(file_name_to_export, "w")
+    file = open(file_name_to_export, "a+")
     for dist_function in distance_functions:
         for selected_k in k:
             for vote_function in voting_functions:
@@ -91,19 +91,20 @@ def run_experiment(data_name, file_name_to_export, distance_functions, k, voting
 
     file.close()
 
+
 if __name__ == '__main__':
 
     data_to_use = "datasets/kropt"
-    file_name_to_export = "test.txt"
+    file_name_to_export = "knn_results/results_knn_kropt_fixed.txt"
 
     # Options: 1, 3, 5, 7,
-    k = [3]
+    k = [1, 3, 5, 7]
     # Options: manhattan_metric, euclidean_metric, camberra_metric
-    distance_functions = [manhattan_metric]
+    distance_functions = [manhattan_metric]  # man,
     # Options: majority_class, inverse_distance_weighted, sheppards_work
-    voting_functions = [majority_class]
+    voting_functions = [majority_class, inverse_distance_weighted, sheppards_work]
     # Options: equal_weight, info_gain, reliefF
-    weighting_functions = [equal_weight]
+    weighting_functions = [equal_weight, info_gain, reliefF]
 
     reduction_techniques = [None]  # new_FCNN_rule, ENN, ib2
 
