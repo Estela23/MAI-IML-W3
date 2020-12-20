@@ -2,24 +2,37 @@
 from KNN.algorithms.distance_metrics import manhattan_metric, euclidean_metric, camberra_metric
 from KNN.algorithms.policies_knn import majority_class, inverse_distance_weighted, sheppards_work
 from KNN.algorithms.weighting_knn import equal_weight, info_gain, reliefF
-from evaluation import apply_model
+from evaluation import run_experiment
+from scipy.stats import friedmanchisquare
 import time
 
-hypo_global_winner = [manhattan_metric, 7, sheppards_work, reliefF]
-hypo_isolation_winner = [euclidean_metric, 7, majority_class, equal_weight]
+hypo_global_winner = [camberra_metric, 3, majority_class, info_gain]
+hypo_isolation_winner = [camberra_metric, 3, inverse_distance_weighted, info_gain]
+
+data_to_use = "datasets/hypothyroid"
+file_name_to_export = "test.txt"
+
+# Options: 1, 3, 5, 7,
+k = [3]
+# Options: manhattan_metric, euclidean_metric, camberra_metric
+distance_functions = [camberra_metric]
+# Options: majority_class, inverse_distance_weighted, sheppards_work
+voting_functions = [majority_class]
+# Options: equal_weight, info_gain, reliefF
+weighting_functions = [info_gain]
+
+reduction_techniques = [None]  # new_FCNN_rule, ENN, ib2
+
+run_experiment(data_to_use, 'tair_test.txt', distance_functions, k, voting_functions, weighting_functions,
+               reduction_techniques)
 
 
-def apply_model(distance_function, k, voting_function, weighting_function, train_data, test_data):
-    start_time = time.time()
-    model = knn.KNN(distance_function, k, voting_function, weighting_function, verbose=False)
-    model.fit(train_data)
-    predictions = model.predict(test_data)  # instance 0
-    classes = list(test_data[:, -1])
-    correct_class = [i for i in range(len(classes)) if predictions[i] == classes[i]]
-    n_correct_class = len(correct_class)
-    # n_correct_class = np.sum((predictions == classes).all())  # instance 0
-    end_time = time.time()
-    time_fold = end_time - start_time
+def apply_friedman(data1, data2, data3, alpha = 0.05):# friedman
+    stat, p = friedmanchisquare(data1, data2, data3)
+    print('Statistics=%.3f, p=%.3f' % (stat, p))
+    # interpret
 
-    return n_correct_class, time_fold
-
+    if p > alpha:
+        print('Same distributions (fail to reject H0)')
+    else:
+        print('Different distributions (reject H0)')

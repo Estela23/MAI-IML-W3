@@ -52,48 +52,67 @@ def apply_model_on10folds(data_name, distance_function, k, voting_function, weig
     accuracy_average = np.average(accuracy_by_folds)
     time_average = np.average(time_folds)
 
-    return accuracy_average, correctly_classified, incorrectly_classified, time_average
+    return accuracy_average, correctly_classified, incorrectly_classified, time_average, accuracy_by_folds, \
+           correct_class, incorrect_class, time_folds
 
 
 def write_results(file, dist_function, selected_k, vote_function, weight_function, accuracy, correctly_classified,
-                  incorrectly_classified, time_res):
-
+                  incorrectly_classified, time_res, accuracy_folds, correctly_classified_folds,
+                  incorrectly_classified_folds, time_folds):
     file.write(f"[{dist_function.__name__}, {str(selected_k)}, {vote_function.__name__}, {weight_function.__name__}]")
-    file.write(f"\tAccuracy:   {accuracy}; correctly classified: {correctly_classified}; incorrectly classified: "
-               f"{incorrectly_classified};\tTime:   {time_res} \n")
+    file.write(f"\tAccuracy:   {accuracy}; \tcorrectly classified: {correctly_classified}; \tincorrectly classified: "
+               f"{incorrectly_classified}; \tTime:   {time_res} \t")
+    file.write(f"accuracy_by_folds: " + ", ".join(str(accuracy) for accuracy in accuracy_folds) + "\t")
+    file.write(f"correctly_classified_by_folds: " + ", ".join(str(cor_class) for cor_class in
+                                                              correctly_classified_folds) + "\t")
+    file.write(f"incorrectly_classified_by_folds: " + ", ".join(str(incor_class) for
+                                                                incor_class in incorrectly_classified_folds) + "\t")
+    file.write(f"time_by_folds: " + ", ".join(str(time_fold) for time_fold in time_folds) + "\n")
+
+    # file.write(f"correctly_classified_by_folds: %s" % cor_class for cor_class in correctly_classified_folds)
+    # file.write(f"incorrectly_classified_by_folds: %s" % incor_class for incor_class in incorrectly_classified_folds)
+    # file.write(f"time_by_folds: %s" % time_fold for time_fold in time_folds + "\n")
 
 
 def print_results(dist_function, selected_k, vote_function, weight_function, accuracy, correctly_classified,
-                  incorrectly_classified, time_res):
+                  incorrectly_classified, time_res, accuracy_folds, correctly_classified_folds,
+                  incorrectly_classified_folds, time_folds):
     print(f"[{dist_function.__name__}, {selected_k}, {vote_function.__name__}, {weight_function.__name__}]")
     print(f"\tAccuracy:   {accuracy}; correctly classified: {correctly_classified}; incorrectly classified: "
           f"{incorrectly_classified};\tTime:   {time_res} \n")
+    print(f"accuracy_by_folds {accuracy_folds} \t ")
+    print(f"correctly_classified_by_folds {correctly_classified_folds} \t ")
+    print(f"incorrectly_classified_by_folds {incorrectly_classified_folds} \t ")
+    print(f"time_by_folds {time_folds} \n ")
 
 
 def run_experiment(data_name, file_name_to_export, distance_functions, k, voting_functions, weighting_functions,
                    reduction_techniques):
-
     file = open(file_name_to_export, "a+")
     for dist_function in distance_functions:
         for selected_k in k:
             for vote_function in voting_functions:
                 for weight_function in weighting_functions:
                     for red_technique in reduction_techniques:
-                        accuracy, correctly_classified, incorrectly_classified, time_res = \
+                        accuracy_average, correctly_classified_average, incorrectly_classified_average, time_res_average, \
+                        accuracy_folds, correctly_classified_folds, incorrectly_classified_folds, time_folds = \
                             apply_model_on10folds(data_name, dist_function, selected_k, vote_function,
                                                   weight_function, red_technique)
                         # Write results to txt
-                        write_results(file, dist_function, selected_k, vote_function, weight_function, accuracy,
-                                      correctly_classified, incorrectly_classified, time_res)
+                        write_results(file, dist_function, selected_k, vote_function, weight_function,
+                                      accuracy_average, correctly_classified_average, incorrectly_classified_average,
+                                      time_res_average, accuracy_folds, correctly_classified_folds,
+                                      incorrectly_classified_folds, time_folds)
 
-                        print_results(dist_function, selected_k, vote_function, weight_function, accuracy,
-                                      correctly_classified, incorrectly_classified, time_res)
+                        print_results(dist_function, selected_k, vote_function, weight_function, accuracy_average,
+                                      correctly_classified_average, incorrectly_classified_average,
+                                      time_res_average, accuracy_folds, correctly_classified_folds,
+                                      incorrectly_classified_folds, time_folds)
 
     file.close()
 
 
 if __name__ == '__main__':
-
     data_to_use = "datasets/kropt"
     file_name_to_export = "knn_results/results_knn_kropt_fixed.txt"
 
