@@ -59,18 +59,26 @@ def analyze(file_name):
              equal_weight, info_gain, reliefF]):
         print(names[idx])
         print_average_accuracy(lst, txt)
+        print_average_time(lst, txt)
 
     best_idx = get_best_accuracy_idx(txt)
     print("best accuracy got " + get_combination(txt[best_idx]) + " with accuracy " + str(get_accuracy(txt[best_idx]))
           + " with time: " + str(get_time(txt[best_idx])))
-
-    print("all euclidean \n")
+    # best combination with inverse distance:
+    best_idx_inverse, best_accuracy_inverse = get_best_idx_for_param(txt, inverse_distance_weighted)
+    print("best accuracy with Inverse got " + get_combination(txt[best_idx_inverse]) + " with accuracy " + str(get_accuracy(txt[best_idx_inverse]))
+          + " with time: " + str(get_time(txt[best_idx_inverse])))
 
 
 def get_best_idx_for_param(txt, lst):
-    best_idx_idx = get_best_accuracy_idx([print(txt[lst[i]]) for i in range(len(lst))])
-    best_idx = lst[best_idx_idx]
-    return best_idx
+    best_accuracy = 0
+    for idx in lst:
+        accuracy = get_accuracy(txt[idx])
+        if accuracy > best_accuracy:
+            idx_best_accuracy = idx
+            best_accuracy = get_accuracy(txt[idx_best_accuracy])
+
+    return idx_best_accuracy, best_accuracy
 
 
 def get_best_accuracy_idx(txt):
@@ -91,7 +99,12 @@ def get_time(line):
 
 def print_average_accuracy(idx_lst, txt):
     accuracy_average = np.average([get_accuracy(txt[idx]) for idx in idx_lst])
-    print(accuracy_average)
+    print("average accuracy: ", accuracy_average)
+
+
+def print_average_time(idx_lst, txt):
+    time_average = np.average([get_time(txt[idx]) for idx in idx_lst])
+    print("average time: ", time_average)
 
 
 def get_combination(line):
@@ -99,4 +112,4 @@ def get_combination(line):
 
 
 # analyze("results_knn_kropt_final_alberto.txt")
-analyze("results_knn_hypo_final_alberto.txt")
+analyze("results_knn_hypothyroid_fixed.txt")
