@@ -84,7 +84,7 @@ class KNN:
         k_closests = k_closests_partition[:, :k]
         k_labels_partition = np.take_along_axis(labels, index_array, axis=-1)
         k_labels = k_labels_partition[:, :k]
-        k_closests, k_labels = (list(t) for t in zip(*sorted(zip(k_closests.tolist(), k_labels.tolist()))))
+        k_closests, k_labels = (list(t) for t in zip(*zip(k_closests.tolist(), k_labels.tolist())))
 
         return k_closests, k_labels
 
