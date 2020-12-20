@@ -1,5 +1,5 @@
-import numpy as np
 from KNN.algorithms.policies_knn import random_policy
+
 
 
 def ENN(data_to_fit, knn):
