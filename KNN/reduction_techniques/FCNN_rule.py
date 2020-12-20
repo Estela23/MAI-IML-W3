@@ -32,7 +32,8 @@ def compute_centroids(data_to_fit):
             temp_sum += instances_i[j]
         real_centroid_i = temp_sum / len(instances_i)
         distances_to_centroid = [calculate_distance_vectors(real_centroid_i, instances_i[j]) for j in range(len(instances_i))]
-        index = np.array(distances_to_centroid).index(np.amin(np.array(distances_to_centroid)))
+        index = distances_to_centroid.index(np.amin(np.array(distances_to_centroid)))
+        #index = np.where(np.array(distances_to_centroid) == np.amin(np.array(distances_to_centroid)))
         centroid_i = instances_i[index]
         centroids.append(centroid_i)
     return centroids, labels_centroids
