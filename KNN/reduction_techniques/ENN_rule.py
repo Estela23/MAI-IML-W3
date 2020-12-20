@@ -1,10 +1,11 @@
 from KNN.algorithms.policies_knn import random_policy
-import numpy as np
+
 
 
 def ENN(data_to_fit, knn):
     temp_voting = knn._voting_function  # saved for later
     knn._voting_function = random_policy  # define the needed policy: majority -> if equals - random selection
+    knn._data = data_to_fit
     subset = data_to_fit
 
     predictions = knn.predict(subset)

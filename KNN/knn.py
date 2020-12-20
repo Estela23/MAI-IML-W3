@@ -27,7 +27,11 @@ class KNN:
     def fit(self, data_to_fit):
         # We store the training data
         if self._reductionKNNAlgorithm is not None:
+            print("Reducing data...")
+            time_init = time.time()
             data_to_fit = self._reductionKNNAlgorithm(data_to_fit=data_to_fit, knn=self)
+            time_end = time.time()
+            print(f"Time reducing data: {time_end - time_init}")
         self._data = data_to_fit
 
     def predict(self, data_to_predict):
