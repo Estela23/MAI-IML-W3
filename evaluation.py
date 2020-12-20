@@ -2,9 +2,9 @@ from data_cleaning import load_kropt, load_hypo
 from KNN import knn
 import numpy as np
 import time
-from distance_metric import manhattan_metric, euclidean_metric, camberra_metric
-from policies_knn import majority_class, inverse_distance_weighted, sheppards_work
-from weighting_knn import equal_weight, info_gain, reliefF
+from KNN.algorithms.distance_metrics import manhattan_metric, euclidean_metric, camberra_metric
+from KNN.algorithms.policies_knn import majority_class, inverse_distance_weighted, sheppards_work
+from KNN.algorithms.weighting_knn import equal_weight, info_gain, reliefF
 
 # Run the desired algorithm and count the number of cases correctly classified,
 # the number of cases incorrectly classified, and the problem-solving time.
@@ -12,7 +12,7 @@ from weighting_knn import equal_weight, info_gain, reliefF
 
 def apply_model(distance_function, k, voting_function, weighting_function, train_data, test_data):
     start_time = time.time()
-    model = knn.KNN(distance_function, k, voting_function, weighting_function)
+    model = knn.KNN(distance_function, k, voting_function, weighting_function, verbose=False)
     model.fit(train_data)
     predictions = model.predict(test_data)  # instance 0
     classes = list(test_data[:, -1])
@@ -55,7 +55,7 @@ def run_experiment(data_name):
     k = [1, 3, 5, 7, 21]
     voting_function = [majority_class, inverse_distance_weighted, sheppards_work]
     weighting_function = [equal_weight, info_gain, reliefF]
-    file = open("results_knn_kropt_21nn_23nn.txt", "w")
+    file = open("knn_results/results_knn_kropt_21nn_23nn.txt", "w")
     for ind_dist in range(len(distance_function)):
         for ind_k in range(len(k)):
             for ind_vote in range(len(voting_function)):
@@ -78,5 +78,5 @@ def run_experiment(data_name):
     file.close()
 
 
-run_experiment('datasets/kropt')
+# run_experiment('datasets/kropt')
 # run_experiment('datasets/hypothyroid')
