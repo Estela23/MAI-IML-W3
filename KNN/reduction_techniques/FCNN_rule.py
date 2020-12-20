@@ -19,8 +19,6 @@ def assign_instance_to_subset(data, subset_data):
 
 
 def calculate_distance_vectors(x1, x2):
-    if x1 is None or x2 is None:
-        return float('inf')
     return np.linalg.norm(np.array(x1)-np.array(x2))
 
 
@@ -32,7 +30,10 @@ def compute_centroids(data_to_fit):
         temp_sum = np.zeros(data_to_fit.shape[1] - 1)
         for j in range(len(instances_i)):
             temp_sum += instances_i[j]
-        centroid_i = temp_sum / len(instances_i)
+        real_centroid_i = temp_sum / len(instances_i)
+        distances_to_centroid = [calculate_distance_vectors(real_centroid_i, instances_i[j]) for j in range(len(instances_i))]
+        index = np.array(distances_to_centroid).index(np.amin(np.array(distances_to_centroid)))
+        centroid_i = instances_i[index]
         centroids.append(centroid_i)
     return centroids, labels_centroids
 
