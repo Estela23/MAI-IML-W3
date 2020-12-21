@@ -46,5 +46,5 @@ Then, all combinations will be performed.
 This project is divided in 4 main Python packages:
 * data_cleaning: Here we have several scripts to read and parse datasets.
 * datasets: Datasets used in this project.
-* KNN: Implementation of KNN, with it's algorithms and reduction techniques.
-* knn_results: Folder where results of KNN are saved.
+* KNN: Implementation of KNN, with its algorithms and reduction techniques in subpackages.
+* knn_results: Folder where results of KNN are saved. We also provide a few scripts for analysis.
