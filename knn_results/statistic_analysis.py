@@ -10,7 +10,7 @@ hypo_global_winner = [camberra_metric, 3, majority_class, info_gain]
 hypo_isolation_winner = [camberra_metric, 3, inverse_distance_weighted, info_gain]
 
 data_to_use = "datasets/hypothyroid"
-file_name_to_export = "test.txt"
+file_name_to_export = "knn_results/test.txt"
 
 # Options: 1, 3, 5, 7,
 k = [3]

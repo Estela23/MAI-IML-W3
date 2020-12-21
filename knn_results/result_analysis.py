@@ -131,7 +131,7 @@ def read_folds(file_name, num_line):
 
 
 # analyze("results_knn_kropt_final_alberto.txt")
-# analyze("results_knn_hypothyroid_fixed.txt")
+# analyze("results_knn_hypothyroid.txt")
 
 # accuracies, correctly_classified, incorrectly_classified, time = read_folds('tair_test.txt', 0)
 
