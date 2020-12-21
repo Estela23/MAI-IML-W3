@@ -5,7 +5,7 @@ from data_cleaning import load_kropt, load_hypo
 from KNN.algorithms.distance_metrics import manhattan_metric, euclidean_metric, camberra_metric
 from KNN.algorithms.policies_knn import majority_class, inverse_distance_weighted, sheppards_work
 from KNN.algorithms.weighting_knn import equal_weight, info_gain, reliefF
-from KNN.reduction_techniques.FCNN_rule import new_FCNN_rule
+from KNN.reduction_techniques.FCNN_rule import FCNN_rule
 from KNN.reduction_techniques.ENN_rule import ENN
 from KNN.reduction_techniques.ib2 import ib2
 

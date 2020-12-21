@@ -38,7 +38,7 @@ def compute_centroids(data_to_fit):
     return centroids, labels_centroids
 
 
-def new_FCNN_rule(data_to_fit, **_kwargs):
+def FCNN_rule(data_to_fit, **_kwargs):
     centroids, labels_centroids = compute_centroids(data_to_fit)
     delta_S = True
     while delta_S:
