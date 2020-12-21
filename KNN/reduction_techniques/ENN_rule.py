@@ -31,33 +31,4 @@ def ENN(data_to_fit, knn):
             subset_backup = np.delete(subset_backup, (idx_adjusted), axis=0)
 
     knn._voting_function = temp_voting  # return the policy of the original knn
-    print(f"AFTER PERFORMING ENN REDUCTION, WE WENT FROM {data_to_fit.shape} to {subset_backup.shape}")
     return subset_backup
-
-
-"""k = 7
-train_data, test_data = load_hypo.load_train_test_fold('datasets/hypothyroid', 1)
-print(np.shape(train_data))
-model = KNN(euclidean_metric, k, majority_class, equal_weight, verbose=False)
-model.fit(train_data)
-subset = ENN(train_data, model)
-print(np.shape(subset))
-
-
-correct_class, time_folds = apply_model(euclidean_metric, k, majority_class, equal_weight, train_data, test_data)
-incorrect_class = len(test_data) - correct_class  # broadcasting: number of instances minus the correctly classified
-correctly_classified = np.average(correct_class)
-accuracy = correct_class / len(test_data)
-print("accuracy original data: ", accuracy)
-# print(accuracy)
-print("time: ", time_folds)
-
-
-correct_class, time_folds = apply_model(euclidean_metric, k, majority_class, equal_weight, subset, test_data)
-incorrect_class = len(test_data) - correct_class  # broadcasting: number of instances minus the correctly classified
-correctly_classified = np.average(correct_class)
-accuracy = correct_class / len(test_data)
-print("accuracy reduced data: ", accuracy)
-# print(accuracy)
-print("time: ", time_folds)
-"""

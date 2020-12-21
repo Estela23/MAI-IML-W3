@@ -4,11 +4,6 @@ from sklearn.feature_selection import mutual_info_classif
 from ReliefF import ReliefF
 from sklearn.preprocessing import minmax_scale
 
-"""
-return "feature_weights", after computing matrix_deltas and feature_weights we simply
-multiply them and have the final distances between all the training and test elements
-"""
-
 
 def equal_weight(*args):
     feature_weights = np.ones(args[0].shape[1])

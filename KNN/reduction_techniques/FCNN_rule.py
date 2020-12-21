@@ -68,34 +68,3 @@ def new_FCNN_rule(data_to_fit, **_kwargs):
 
     reduced_data = np.hstack((centroids, labels_centroids[:, None]))
     return reduced_data
-
-
-"""
-def FCNN_rule(data_to_fit, **_kwargs):
-    T = data_to_fit[:, :-1]
-    S = np.empty((0, data_to_fit.shape[1] - 1))
-    delta_S = compute_centroids(data_to_fit)
-    while len(delta_S) != 0:
-        S = np.vstack((S, np.array(delta_S)))
-        rep_p = [None] * S.shape[0]
-        T_minus_S = [elem for elem in T.tolist() if elem not in S.tolist()]
-        nearest_q = [None] * len(T_minus_S)
-        for idx, q in enumerate(T_minus_S):
-            for p in delta_S:
-                if calculate_distance_vectors(nearest_q[idx], q) > calculate_distance_vectors(p, q):
-                    nearest_q[idx] = p
-            # TODO: arreglar estos índices del rep_p ...
-            if data_to_fit[q, -1] != data_to_fit[nearest_q[idx], -1] and \
-                    calculate_distance_vectors(nearest_q[idx], q) < calculate_distance_vectors(nearest_q[idx], rep_p[idx]):
-                rep_p[nearest_q[idx]] = q
-        delta_S = []
-        for rep in rep_p:
-            if rep is not None:
-                delta_S.append(rep)
-    return S
-
-
-train_data, test_data = load_hypo.load_train_test_fold('datasets/hypothyroid', 1)
-
-reduced_train_data = new_FCNN_rule(train_data)
-"""
